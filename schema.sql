@@ -9,13 +9,13 @@ CREATE TABLE IF NOT EXISTS cities (
     city_code VARCHAR(10),
     city_name VARCHAR(50),
     timezone VARCHAR(10),
-    country_id VARCHAR(50),
+    country_id INTEGER,
     FOREIGN KEY(country_id) REFERENCES countries(country_id)
     );
 
 CREATE TABLE IF NOT EXISTS buildings (
     building_id INTEGER PRIMARY KEY,
-    city_id VARCHAR(50),
+    city_id INTEGER,
     address VARCHAR(50),
     FOREIGN KEY(city_id) REFERENCES cities(city_id)
     );
@@ -43,6 +43,10 @@ CREATE TABLE IF NOT EXISTS users (
     job_position VARCHAR(50),
     FOREIGN KEY(company_id) REFERENCES companies(company_id)
     );
+
+DELETE FROM countries;
+
+DELETE FROM cities;
 
 INSERT INTO countries (country_id, country_code, country_name)
 VALUES
