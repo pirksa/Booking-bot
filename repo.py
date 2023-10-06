@@ -1,13 +1,21 @@
-import sqlite3
 from model import Country
-
-con = sqlite3.connect('rooms.sqlite')
-cur = con.cursor()
 
 
 class Repository:
-    def __init__(self, id_value):
-        self.id_value = id_value
+    def __init__(self, con):
+        self.con = con
+
+    @staticmethod
+    def select_sql_query(table_name, id_name):
+        return f"SELECT * FROM {table_name} WHERE {id_name} = "
+
+    @staticmethod
+    def delete_sql_query(table_name, id_name):
+        return f"DELETE FROM {table_name} WHERE {id_name} = "
+
+    @staticmethod
+    def insert_sql_query(table_name):
+        return f"INSERT INTO {table_name} VALUES "
 
     def get_by_id(self):
         pass
@@ -26,34 +34,35 @@ class Repository:
 
 
 class CountryRepository(Repository):
-    def __init__(self, id_value, country_code_value, country_name_value):
-        super().__init__(id_value)
-        self.country_code_value = country_code_value
-        self.country_name_value = country_name_value
+    def __init__(self, con):
+        super().__init__(con)
 
     def tuple_to_class(self, data):
-        country_id, country_name, country_code = data
-        return Country(country_id, country_name, country_code)
+        country_id, country_code, country_name = data
+        return Country(country_id, country_code, country_name)
 
     def class_to_tuple(self, country):
-        return country.country_id, country.country_name, country.country_code
+        return country.country_id, country.country_code, country.country_name
 
-    def get_by_id(self):
-        select_sql_query = "SELECT * FROM countries WHERE country_id = ?"
-        cur.execute(select_sql_query, self.id_value)
-        res = cur.fetchall()
-        return self.tuple_to_class(res)
+    def get_by_id(self, *id_value):
+        cur = self.con.cursor()
+        query = self.select_sql_query('countries', 'country_id') + '?'
+        cur.execute(query, id_value)
+        res = cur.fetchone()
+        self.con.close()
+        return "Entity doesn't exist" if not res else self.tuple_to_class(res)
 
-    def delete_by_id(self):
-        delete_sql_query = "DELETE FROM countries WHERE country_id = ?"
-        cur.execute(delete_sql_query, self.id_value)
+    def delete_by_id(self, *id_value):
+        cur = self.con.cursor()
+        query = self.delete_sql_query('countries', 'country_id') + '?'
+        cur.execute(query, id_value)
+        self.con.commit()
 
-    def save(self):
-        country = Country(self.id_value, self.country_code_value, self.country_name_value)
+    def save(self, **country):
+        cur = self.con.cursor()
+        country = Country(country['country_id'], country['country_code'], country['country_name'])
         data = self.class_to_tuple(country)
-        insert_sql_query = "INSERT INTO countries VALUES (?, ?, ?)"
-        cur.execute(insert_sql_query, data)
-        con.commit()
+        query = self.insert_sql_query('countries') + '(?, ?, ?)'
+        cur.execute(query, data)
+        self.con.commit()
 
-
-con.close()

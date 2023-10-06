@@ -4,6 +4,9 @@ class Country:
         self.country_code = country_code
         self.country_name = country_name
 
+    def __str__(self):
+        return f"Country({self.country_id}, {self.country_code}, {self.country_name})"
+
 
 class City:
     def __init__(self, city_id, city_code, city_name, timezone):

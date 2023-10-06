@@ -1,9 +1,11 @@
+DROP TABLE IF EXISTS countries;
 CREATE TABLE IF NOT EXISTS countries (
     country_id INTEGER PRIMARY KEY,
     country_code VARCHAR(10),
     country_name VARCHAR(50)
     );
 
+DROP TABLE IF EXISTS cities;
 CREATE TABLE IF NOT EXISTS cities (
     city_id INTEGER PRIMARY KEY,
     city_code VARCHAR(10),
@@ -13,6 +15,7 @@ CREATE TABLE IF NOT EXISTS cities (
     FOREIGN KEY(country_id) REFERENCES countries(country_id)
     );
 
+DROP TABLE IF EXISTS buildings;
 CREATE TABLE IF NOT EXISTS buildings (
     building_id INTEGER PRIMARY KEY,
     city_id INTEGER,
@@ -20,6 +23,7 @@ CREATE TABLE IF NOT EXISTS buildings (
     FOREIGN KEY(city_id) REFERENCES cities(city_id)
     );
 
+DROP TABLE IF EXISTS rooms;
 CREATE TABLE IF NOT EXISTS rooms (
     room_id INTEGER PRIMARY KEY,
     building_id INTEGER,
@@ -28,6 +32,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     FOREIGN KEY(building_id) REFERENCES buildings(building_id)
     );
 
+DROP TABLE IF EXISTS companies;
 CREATE TABLE IF NOT EXISTS companies (
     company_id INTEGER PRIMARY KEY,
     company_name VARCHAR(100),
@@ -35,6 +40,7 @@ CREATE TABLE IF NOT EXISTS companies (
     FOREIGN KEY(building_id) REFERENCES buildings(building_id)
     );
 
+DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
     user_name VARCHAR(30),
@@ -44,21 +50,11 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY(company_id) REFERENCES companies(company_id)
     );
 
-DELETE FROM countries;
-
-DELETE FROM cities;
-
-INSERT INTO countries (country_id, country_code, country_name)
-VALUES
-    (1, 'KZ', 'Kazakhstan'),
-    (2, 'US', 'Uzbekistan'),
-    (3, 'RU', 'Russia'),
-    (4, 'TR', 'Turkey');
-
-INSERT INTO cities (city_id, city_code, city_name, timezone)
-VALUES
-    (1, 'ALA', 'Almaty', 'UTC+6'),
-    (2, 'TSE', 'Astana', 'UTC+6'),
-    (3, 'TAS', 'Tashkent','UTC+5'),
-    (4, 'MOW', 'Moscow', 'UTC+3'),
-    (5, 'IST', 'Istanbul', 'UTC+3');
+DROP TABLE IF EXISTS bookings;
+CREATE TABLE IF NOT EXISTS bookings (
+    booking_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    date_time TEXT,
+    booking_time INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
