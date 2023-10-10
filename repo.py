@@ -5,19 +5,7 @@ class Repository:
     def __init__(self, con):
         self.con = con
 
-    @staticmethod
-    def select_sql_query(table_name, id_name):
-        return f"SELECT * FROM {table_name} WHERE {id_name} = "
-
-    @staticmethod
-    def delete_sql_query(table_name, id_name):
-        return f"DELETE FROM {table_name} WHERE {id_name} = "
-
-    @staticmethod
-    def insert_sql_query(table_name):
-        return f"INSERT INTO {table_name} VALUES "
-
-    def get_by_id(self):
+    def get_by_id(self, id_value):
         pass
 
     def delete_by_id(self):
@@ -26,43 +14,53 @@ class Repository:
     def save(self):
         pass
 
-    def tuple_to_class(self, data):
+    @staticmethod
+    def tuple_to_class(data):
         pass
 
-    def class_to_tuple(self, entity):
+    @staticmethod
+    def class_to_tuple(entity):
         pass
 
 
 class CountryRepository(Repository):
+    __select_sql = 'SELECT * FROM'
+    __delete_sql = 'DELETE FROM'
+    __insert_sql = 'INSERT INTO'
+
     def __init__(self, con):
         super().__init__(con)
 
-    def tuple_to_class(self, data):
-        country_id, country_code, country_name = data
-        return Country(country_id, country_code, country_name)
+    @staticmethod
+    def tuple_to_class(data):
+        if not data:
+            return None
+        else:
+            return Country(country_id=data[0], country_code=data[1], country_name=data[2])
 
-    def class_to_tuple(self, country):
+    @staticmethod
+    def class_to_tuple(country):
         return country.country_id, country.country_code, country.country_name
 
     def get_by_id(self, *id_value):
         cur = self.con.cursor()
-        query = self.select_sql_query('countries', 'country_id') + '?'
+        query = f'{self.__select_sql} countries WHERE country_id = ?'
         cur.execute(query, id_value)
         res = cur.fetchone()
         self.con.close()
-        return "Entity doesn't exist" if not res else self.tuple_to_class(res)
+        return self.tuple_to_class(res)
 
     def delete_by_id(self, *id_value):
         cur = self.con.cursor()
-        query = self.delete_sql_query('countries', 'country_id') + '?'
+        query = f'{self.__delete_sql} countries WHERE country_id = ?'
         cur.execute(query, id_value)
         self.con.commit()
 
-    def save(self, **country):
+    def save(self, **values):
         cur = self.con.cursor()
-        country = Country(country['country_id'], country['country_code'], country['country_name'])
+        country = Country(country_id=values['country_id'], country_code=values['country_code'],
+                          country_name=values['country_name'])
         data = self.class_to_tuple(country)
-        query = self.insert_sql_query('countries') + '(?, ?, ?)'
+        query = f'{self.__insert_sql} countries VALUES (?, ?, ?)'
         cur.execute(query, data)
         self.con.commit()
-

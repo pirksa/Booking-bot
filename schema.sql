@@ -1,11 +1,23 @@
 DROP TABLE IF EXISTS countries;
+
+DROP TABLE IF EXISTS cities;
+
+DROP TABLE IF EXISTS buildings;
+
+DROP TABLE IF EXISTS rooms;
+
+DROP TABLE IF EXISTS companies;
+
+DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS bookings;
+
 CREATE TABLE IF NOT EXISTS countries (
     country_id INTEGER PRIMARY KEY,
     country_code VARCHAR(10),
     country_name VARCHAR(50)
     );
 
-DROP TABLE IF EXISTS cities;
 CREATE TABLE IF NOT EXISTS cities (
     city_id INTEGER PRIMARY KEY,
     city_code VARCHAR(10),
@@ -15,7 +27,6 @@ CREATE TABLE IF NOT EXISTS cities (
     FOREIGN KEY(country_id) REFERENCES countries(country_id)
     );
 
-DROP TABLE IF EXISTS buildings;
 CREATE TABLE IF NOT EXISTS buildings (
     building_id INTEGER PRIMARY KEY,
     city_id INTEGER,
@@ -23,7 +34,6 @@ CREATE TABLE IF NOT EXISTS buildings (
     FOREIGN KEY(city_id) REFERENCES cities(city_id)
     );
 
-DROP TABLE IF EXISTS rooms;
 CREATE TABLE IF NOT EXISTS rooms (
     room_id INTEGER PRIMARY KEY,
     building_id INTEGER,
@@ -32,7 +42,6 @@ CREATE TABLE IF NOT EXISTS rooms (
     FOREIGN KEY(building_id) REFERENCES buildings(building_id)
     );
 
-DROP TABLE IF EXISTS companies;
 CREATE TABLE IF NOT EXISTS companies (
     company_id INTEGER PRIMARY KEY,
     company_name VARCHAR(100),
@@ -40,7 +49,6 @@ CREATE TABLE IF NOT EXISTS companies (
     FOREIGN KEY(building_id) REFERENCES buildings(building_id)
     );
 
-DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
     user_name VARCHAR(30),
@@ -50,7 +58,6 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY(company_id) REFERENCES companies(company_id)
     );
 
-DROP TABLE IF EXISTS bookings;
 CREATE TABLE IF NOT EXISTS bookings (
     booking_id INTEGER PRIMARY KEY,
     user_id INTEGER,

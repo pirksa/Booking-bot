@@ -1,11 +1,18 @@
 class Country:
-    def __init__(self, country_id, country_code, country_name):
-        self.country_id = country_id
-        self.country_code = country_code
-        self.country_name = country_name
+    country_id: int
+    country_code: str
+    country_name: str
 
-    def __str__(self):
-        return f"Country({self.country_id}, {self.country_code}, {self.country_name})"
+    def __init__(self, **props):
+        self.country_id = props.get('country_id', None)
+        self.country_code = props.get('country_code', None)
+        self.country_name = props.get('country_name', None)
+
+    def __eq__(self, other):
+        if not isinstance(other, Country):
+            raise ValueError
+        other = other.country_id, other.country_code, other.country_name
+        return (self.country_id, self.country_code, self.country_name) == other
 
 
 class City:
