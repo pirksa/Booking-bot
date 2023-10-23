@@ -37,4 +37,4 @@ class City:
     def __eq__(self, other):
         if isinstance(other, City):
             other = other.city_id, other.city_code, other.city_name, other.timezone, other.country_id
-        return self.city_id, self.city_code, self.city_name, self.timezone, self.country_id == other
+        return (self.city_id, self.city_code, self.city_name, self.timezone, self.country_id) == other
