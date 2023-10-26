@@ -53,9 +53,8 @@ class CountryRepository(Repository):
     def __setitem__(self, key, value):
         if not value['country_id']:
             value['country_id'] = key
-        else:
-            if key != value['country_id']:
-                raise ValueError
+        if key != value['country_id']:
+            raise ValueError
         self.save(**value)
 
     def __len__(self):
@@ -101,9 +100,8 @@ class CityRepository(Repository):
     def __setitem__(self, key, value):
         if not value['city_id']:
             value['city_id'] = key
-        else:
-            if key != value['city_id']:
-                raise ValueError
+        if key != value['city_id']:
+            raise ValueError
         self.save(**value)
 
     def __len__(self):

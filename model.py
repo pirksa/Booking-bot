@@ -15,7 +15,7 @@ class Country:
         return f"Country({self.country_id}, {self.country_code}, {self.country_name})"
 
     def __eq__(self, other):
-        return (self.country_id, self.country_code, self.country_name) == transform.country_to_tuple(other)
+        return transform.country_to_tuple(self) == transform.country_to_tuple(other)
 
 
 class City:
@@ -36,5 +36,4 @@ class City:
         return f'City({self.city_id}, {self.city_code}, {self.city_name}, {self.timezone}, {self.country_id})'
 
     def __eq__(self, other):
-        return (self.city_id, self.city_code, self.city_name,
-                self.timezone, self.country_id) == transform.city_to_tuple(other)
+        return transform.city_to_tuple(self) == transform.city_to_tuple(other)
