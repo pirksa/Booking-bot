@@ -1,16 +1,17 @@
 import unittest
+from tsidpy import TSID
 
 from repo import CountryRepository, CityRepository
 from model import Country, City
 
-import sqlite3
-
 from init_db import create_schema
+from create_data import insert_data
 
 
 class Test(unittest.TestCase):
     def setUp(self):
         create_schema()
+        insert_data()
         self.repo_country = CountryRepository()
         self.repo_city = CityRepository()
 
@@ -25,8 +26,10 @@ class Test(unittest.TestCase):
         self.assertEqual(None, self.repo_country[1])
 
     def test_save_country_1(self):
-        self.repo_country[5] = {'country_id': 5, 'country_code': 'DE', 'country_name': 'Germany'}
-        self.assertEqual(Country(country_id=5, country_code='DE', country_name='Germany'), self.repo_country[5])
+        new_id = TSID.create().number
+        self.repo_country[new_id] = {'country_id': None, 'country_code': 'DE', 'country_name': 'Germany'}
+        self.assertEqual(Country(country_id=new_id, country_code='DE', country_name='Germany'),
+                         self.repo_country[new_id])
 
     def test_save_country_2_update(self):
         self.repo_country[1] = {'country_id': 1, 'country_code': 'KZ', 'country_name': 'Kazakhstan'}
@@ -54,10 +57,11 @@ class Test(unittest.TestCase):
         self.assertEqual(None, self.repo_city[1])
 
     def test_save_city_1(self):
-        self.repo_city[6] = {'city_id': 6, 'city_code': 'BER', 'city_name': 'Berlin', 'timezone': 'UTC+2',
-                             'country_id': 5}
-        res = City(city_id=6, city_code='BER', city_name='Berlin', timezone='UTC+2', country_id=5)
-        self.assertEqual(res, self.repo_city[6])
+        new_id = TSID.create().number
+        self.repo_city[new_id] = {'city_id': new_id, 'city_code': 'BER', 'city_name': 'Berlin', 'timezone': 'UTC+2',
+                                  'country_id': 5}
+        res = City(city_id=new_id, city_code='BER', city_name='Berlin', timezone='UTC+2', country_id=5)
+        self.assertEqual(res, self.repo_city[new_id])
 
     def test_save_city_2_update(self):
         self.repo_city[3] = {'city_id': 3, 'city_code': 'TAS', 'city_name': 'Tashkent', 'timezone': 'UTC+5',

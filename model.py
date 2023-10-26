@@ -1,3 +1,6 @@
+import transform
+
+
 class Country:
     country_id: int
     country_code: str
@@ -12,9 +15,7 @@ class Country:
         return f"Country({self.country_id}, {self.country_code}, {self.country_name})"
 
     def __eq__(self, other):
-        if isinstance(other, Country):
-            other = other.country_id, other.country_code, other.country_name
-        return (self.country_id, self.country_code, self.country_name) == other
+        return (self.country_id, self.country_code, self.country_name) == transform.country_to_tuple(other)
 
 
 class City:
@@ -35,6 +36,5 @@ class City:
         return f'City({self.city_id}, {self.city_code}, {self.city_name}, {self.timezone}, {self.country_id})'
 
     def __eq__(self, other):
-        if isinstance(other, City):
-            other = other.city_id, other.city_code, other.city_name, other.timezone, other.country_id
-        return (self.city_id, self.city_code, self.city_name, self.timezone, self.country_id) == other
+        return (self.city_id, self.city_code, self.city_name,
+                self.timezone, self.country_id) == transform.city_to_tuple(other)

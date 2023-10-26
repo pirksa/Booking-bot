@@ -5,6 +5,7 @@ from transform import *
 __select_sql = 'SELECT * FROM'
 __delete_sql = 'DELETE FROM'
 __insert_sql = 'INSERT OR REPLACE INTO'
+__select_count_sql = 'SELECT COUNT(*) FROM'
 
 
 class Repository:
@@ -50,14 +51,17 @@ class CountryRepository(Repository):
         super().__init__(**props)
 
     def __setitem__(self, key, value):
-        if key != value['country_id']:
-            raise ValueError
+        if not value['country_id']:
+            value['country_id'] = key
         else:
-            self.save(**value)
+            if key != value['country_id']:
+                raise ValueError
+        self.save(**value)
 
     def __len__(self):
         cur = self.con.cursor()
-        res = cur.execute('SELECT COUNT(*) FROM countries').fetchone()
+        query = f'{globals()["__select_count_sql"]} countries'
+        res = cur.execute(query).fetchone()
         return int(res[0])
 
     def get_by_id(self, *id_value):
@@ -95,14 +99,17 @@ class CityRepository(Repository):
         super().__init__(**props)
 
     def __setitem__(self, key, value):
-        if key != value['city_id']:
-            raise ValueError
+        if not value['city_id']:
+            value['city_id'] = key
         else:
-            self.save(**value)
+            if key != value['city_id']:
+                raise ValueError
+        self.save(**value)
 
     def __len__(self):
         cur = self.con.cursor()
-        res = cur.execute('SELECT COUNT(*) FROM cities').fetchone()
+        query = f'{globals()["__select_count_sql"]} cities'
+        res = cur.execute(query).fetchone()
         return int(res[0])
 
     def get_by_id(self, *id_value):
