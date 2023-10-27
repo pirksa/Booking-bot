@@ -1,6 +1,7 @@
 import sqlite3
-from transform import *
 
+import transform
+from model import Country, City
 
 __select_sql = 'SELECT * FROM'
 __delete_sql = 'DELETE FROM'
@@ -68,7 +69,7 @@ class CountryRepository(Repository):
         query = f'{globals()["__select_sql"]} countries WHERE country_id = ?'
         cur.execute(query, id_value)
         res = cur.fetchone()
-        return tuple_to_country(res)
+        return transform.tuple_to_country(res)
 
     def delete_by_id(self, *id_value):
         cur = self.con.cursor()
@@ -80,7 +81,7 @@ class CountryRepository(Repository):
         cur = self.con.cursor()
         country = Country(country_id=values['country_id'], country_code=values['country_code'],
                           country_name=values['country_name'])
-        data = country_to_tuple(country)
+        data = transform.country_to_tuple(country)
         query = f'{globals()["__insert_sql"]} countries VALUES (?, ?, ?)'
         cur.execute(query, data)
         self.con.commit()
@@ -90,7 +91,7 @@ class CountryRepository(Repository):
         query = f'{globals()["__select_sql"]} countries'
         cur.execute(query)
         res = cur.fetchall()
-        return [tuple_to_country(i) for i in res]
+        return [transform.tuple_to_country(i) for i in res]
 
 
 class CityRepository(Repository):
@@ -115,7 +116,7 @@ class CityRepository(Repository):
         query = f'{globals()["__select_sql"]} cities WHERE city_id = ?'
         cur.execute(query, id_value)
         res = cur.fetchone()
-        return tuple_to_city(res)
+        return transform.tuple_to_city(res)
 
     def delete_by_id(self, *id_value):
         cur = self.con.cursor()
@@ -127,7 +128,7 @@ class CityRepository(Repository):
         cur = self.con.cursor()
         city = City(city_id=values['city_id'], city_code=values['city_code'],
                     city_name=values['city_name'], timezone=values['timezone'], country_id=values['country_id'])
-        data = city_to_tuple(city)
+        data = transform.city_to_tuple(city)
         query = f'{globals()["__insert_sql"]} cities VALUES (?, ?, ?, ?, ?)'
         cur.execute(query, data)
         self.con.commit()
@@ -137,4 +138,4 @@ class CityRepository(Repository):
         query = f'{globals()["__select_sql"]} cities'
         cur.execute(query)
         res = cur.fetchall()
-        return [tuple_to_city(i) for i in res]
+        return [transform.tuple_to_city(i) for i in res]
