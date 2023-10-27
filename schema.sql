@@ -1,3 +1,17 @@
+DROP TABLE IF EXISTS countries;
+
+DROP TABLE IF EXISTS cities;
+
+DROP TABLE IF EXISTS buildings;
+
+DROP TABLE IF EXISTS rooms;
+
+DROP TABLE IF EXISTS companies;
+
+DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS bookings;
+
 CREATE TABLE IF NOT EXISTS countries (
     country_id INTEGER PRIMARY KEY,
     country_code VARCHAR(10),
@@ -44,21 +58,10 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY(company_id) REFERENCES companies(company_id)
     );
 
-DELETE FROM countries;
-
-DELETE FROM cities;
-
-INSERT INTO countries (country_id, country_code, country_name)
-VALUES
-    (1, 'KZ', 'Kazakhstan'),
-    (2, 'US', 'Uzbekistan'),
-    (3, 'RU', 'Russia'),
-    (4, 'TR', 'Turkey');
-
-INSERT INTO cities (city_id, city_code, city_name, timezone)
-VALUES
-    (1, 'ALA', 'Almaty', 'UTC+6'),
-    (2, 'TSE', 'Astana', 'UTC+6'),
-    (3, 'TAS', 'Tashkent','UTC+5'),
-    (4, 'MOW', 'Moscow', 'UTC+3'),
-    (5, 'IST', 'Istanbul', 'UTC+3');
+CREATE TABLE IF NOT EXISTS bookings (
+    booking_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    date_time TEXT,
+    booking_time INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
