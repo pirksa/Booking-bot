@@ -4,8 +4,8 @@ from tsidpy import TSID
 
 from create_data import insert_data
 from init_db import create_schema
-from model import Country, City
-from repo import CountryRepository, CityRepository
+from model import Country, City, Building
+from repo import CountryRepository, CityRepository, BuildingRepository
 
 
 class Test(unittest.TestCase):
@@ -14,12 +14,14 @@ class Test(unittest.TestCase):
         insert_data()
         self.repo_country = CountryRepository()
         self.repo_city = CityRepository()
+        self.repo_building = BuildingRepository()
 
     def test_get_by_id_country_1(self):
         self.assertEqual(Country(country_id=1, country_code='KZ', country_name='Kazakhstan'), self.repo_country[1])
 
     def test_get_by_id_country_2(self):
-        self.assertEqual(None, self.repo_country[5])
+        new_id = TSID.create().number
+        self.assertEqual(None, self.repo_country[new_id])
 
     def test_delete_by_id_country_1(self):
         self.repo_country.delete_by_id(1)
@@ -50,7 +52,8 @@ class Test(unittest.TestCase):
         self.assertEqual(res, self.repo_city[1])
 
     def test_get_by_id_city_2(self):
-        self.assertEqual(None, self.repo_city[6])
+        new_id = TSID.create().number
+        self.assertEqual(None, self.repo_city[new_id])
 
     def test_delete_by_id_city_1(self):
         self.repo_city.delete_by_id(1)
@@ -79,6 +82,38 @@ class Test(unittest.TestCase):
 
     def test_number_of_rows_city(self):
         self.assertEqual(5, len(self.repo_city))
+
+    def test_get_by_id_building_1(self):
+        self.assertEqual(Building(building_id=1, city_id=1, address='Khodzhanova str., 2/2'), self.repo_building[1])
+
+    def test_get_by_id_building_2(self):
+        new_id = TSID.create().number
+        self.assertEqual(None, self.repo_building[new_id])
+
+    def test_delete_by_id_building_1(self):
+        self.repo_building.delete_by_id(1)
+        self.assertEqual(None, self.repo_building[1])
+
+    def test_save_building_1(self):
+        new_id = TSID.create().number
+        self.repo_building[new_id] = {'building_id': new_id, 'city_id': 6, 'address': 'Default address'}
+        self.assertEqual(Building(building_id=new_id, city_id=6, address='Default address'),
+                         self.repo_building[new_id])
+
+    def test_save_building_2_update(self):
+        self.repo_building[1] = {'building_id': 1, 'city_id': 1, 'address': 'Khodzhanova str., 2/2'}
+        self.assertEqual(Building(building_id=1, city_id=1, address='Khodzhanova str., 2/2'), self.repo_building[1])
+
+    def test_get_all_building_1(self):
+        res = [Building(building_id=1, city_id=1, address='Khodzhanova str., 2/2'),
+               Building(building_id=2, city_id=2, address='Mangilik El Ave. 55/8, Block C 4.6'),
+               Building(building_id=3, city_id=3, address='Default address'),
+               Building(building_id=4, city_id=4, address='Default address'),
+               Building(building_id=5, city_id=5, address='Default address')]
+        self.assertEqual(res, self.repo_building.get_all())
+
+    def test_number_of_row_building_1(self):
+        self.assertEqual(5, len(self.repo_building))
 
 
 if __name__ == '__main__':

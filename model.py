@@ -37,3 +37,20 @@ class City:
 
     def __eq__(self, other):
         return transform.city_to_tuple(self) == transform.city_to_tuple(other)
+
+
+class Building:
+    building_id: int
+    city_id: int
+    address: str
+
+    def __init__(self, **props):
+        self.building_id = props.get('building_id')
+        self.city_id = props.get('city_id')
+        self.address = props.get('address')
+
+    def __str__(self):
+        return f'Building({self.building_id}, {self.city_id}, {self.address})'
+
+    def __eq__(self, other):
+        return transform.building_to_tuple(self) == transform.building_to_tuple(other)

@@ -1,7 +1,7 @@
 import sqlite3
 
 import transform
-from model import Country, City
+from model import Country, City, Building
 
 __select_sql = 'SELECT * FROM'
 __delete_sql = 'DELETE FROM'
@@ -22,17 +22,30 @@ class Repository:
         else:
             self.__con = sqlite3.connect('rooms.sqlite')
 
+    @staticmethod
+    def set_id_field(value: dict):
+        return list(value.items())[0][0]
+
+    @staticmethod
+    def set_table_name():
+        pass
+
     def __getitem__(self, key):
         return self.get_by_id(key)
 
     def __setitem__(self, key, value):
-        if key != value['id']:
+        id_field = self.set_id_field(value)
+        if not value[id_field]:
+            value[id_field] = key
+        if key != value[id_field]:
             raise ValueError
-        else:
-            self.save(**value)
+        self.save(**value)
 
     def __len__(self):
-        pass
+        cur = self.con.cursor()
+        query = f'{globals()["__select_count_sql"]} {self.set_table_name()}'
+        res = cur.execute(query).fetchone()
+        return int(res[0])
 
     def get_by_id(self, *id_value):
         pass
@@ -51,18 +64,9 @@ class CountryRepository(Repository):
     def __init__(self, **props):
         super().__init__(**props)
 
-    def __setitem__(self, key, value):
-        if not value['country_id']:
-            value['country_id'] = key
-        if key != value['country_id']:
-            raise ValueError
-        self.save(**value)
-
-    def __len__(self):
-        cur = self.con.cursor()
-        query = f'{globals()["__select_count_sql"]} countries'
-        res = cur.execute(query).fetchone()
-        return int(res[0])
+    @staticmethod
+    def set_table_name():
+        return 'countries'
 
     def get_by_id(self, *id_value):
         cur = self.con.cursor()
@@ -98,18 +102,9 @@ class CityRepository(Repository):
     def __init__(self, **props):
         super().__init__(**props)
 
-    def __setitem__(self, key, value):
-        if not value['city_id']:
-            value['city_id'] = key
-        if key != value['city_id']:
-            raise ValueError
-        self.save(**value)
-
-    def __len__(self):
-        cur = self.con.cursor()
-        query = f'{globals()["__select_count_sql"]} cities'
-        res = cur.execute(query).fetchone()
-        return int(res[0])
+    @staticmethod
+    def set_table_name():
+        return 'cities'
 
     def get_by_id(self, *id_value):
         cur = self.con.cursor()
@@ -139,3 +134,40 @@ class CityRepository(Repository):
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_city(i) for i in res]
+
+
+class BuildingRepository(Repository):
+    def __init__(self, **props):
+        super().__init__(**props)
+
+    @staticmethod
+    def set_table_name():
+        return 'buildings'
+
+    def get_by_id(self, *id_value):
+        cur = self.con.cursor()
+        query = f'{globals()["__select_sql"]} buildings WHERE building_id = ?'
+        cur.execute(query, id_value)
+        res = cur.fetchone()
+        return transform.tuple_to_building(res)
+
+    def delete_by_id(self, *id_value):
+        cur = self.con.cursor()
+        query = f'{globals()["__delete_sql"]} buildings WHERE building_id = ?'
+        cur.execute(query, id_value)
+        self.con.commit()
+
+    def save(self, **values):
+        cur = self.con.cursor()
+        building = Building(building_id=values['building_id'], city_id=values['city_id'], address=values['address'])
+        data = transform.building_to_tuple(building)
+        query = f'{globals()["__insert_sql"]} buildings VALUES (?, ?, ?)'
+        cur.execute(query, data)
+        self.con.commit()
+
+    def get_all(self):
+        cur = self.con.cursor()
+        query = f'{globals()["__select_sql"]} buildings'
+        cur.execute(query)
+        res = cur.fetchall()
+        return [transform.tuple_to_building(i) for i in res]
