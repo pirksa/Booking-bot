@@ -1,7 +1,7 @@
 import sqlite3
 
 import transform
-from model import Country, City, Building
+from model import Country, City, Building, Room
 
 __select_sql = 'SELECT * FROM'
 __delete_sql = 'DELETE FROM'
@@ -132,3 +132,29 @@ class BuildingRepository(Repository):
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_building(i) for i in res]
+
+
+class RoomRepository(Repository):
+    def __init__(self, **props):
+        super().__init__(**props)
+
+    def get_by_id(self, *id_value: int):
+        cur = self.con.cursor()
+        query = f'{globals()["__select_sql"]} rooms WHERE room_id = ?'
+        cur.execute(query, id_value)
+        res = cur.fetchone()
+        return transform.tuple_to_room(res)
+
+    def save(self, entity: Room):
+        cur = self.con.cursor()
+        data = transform.room_to_tuple(entity)
+        query = f'{globals()["__insert_sql"]} rooms VALUES (?, ?, ?, ?)'
+        cur.execute(query, data)
+        self.con.commit()
+
+    def get_all(self):
+        cur = self.con.cursor()
+        query = f'{globals()["__select_sql"]} rooms'
+        cur.execute(query)
+        res = cur.fetchall()
+        return [transform.tuple_to_room(i) for i in res]

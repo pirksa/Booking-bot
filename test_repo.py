@@ -4,8 +4,8 @@ from tsidpy import TSID
 
 from create_data import insert_data
 from init_db import create_schema
-from model import Country, City, Building
-from repo import CountryRepository, CityRepository, BuildingRepository
+from model import Country, City, Building, Room
+from repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository
 
 
 class Test(unittest.TestCase):
@@ -15,6 +15,7 @@ class Test(unittest.TestCase):
         self.repo_country = CountryRepository(table='countries', id_field='country_id')
         self.repo_city = CityRepository(table='cities', id_field='city_id')
         self.repo_building = BuildingRepository(table='buildings', id_field='building_id')
+        self.repo_room = RoomRepository(table='rooms', id_field='room_id')
 
     def test_get_by_id_country_1(self):
         self.assertEqual(Country(country_id=1, country_code='KZ', country_name='Kazakhstan'), self.repo_country[1])
@@ -113,6 +114,33 @@ class Test(unittest.TestCase):
 
     def test_number_of_row_building_1(self):
         self.assertEqual(5, len(self.repo_building))
+
+    def test_get_by_id_room_1(self):
+        self.assertEqual(Room(room_id=1, building_id=1, floor=1, room_name='Meeting room'), self.repo_room[1])
+
+    def test_get_by_id_room_2(self):
+        new_id = TSID.create().number
+        self.assertEqual(None, self.repo_room[new_id])
+
+    def test_delete_by_id_room_1(self):
+        self.repo_room.delete_by_id(1)
+        self.assertEqual(None, self.repo_room[1])
+
+    def test_save_room_1(self):
+        new_id = TSID.create().number
+        self.repo_room[new_id] = Room(room_id=None, building_id=2, floor=3, room_name='Meeting room')
+        self.assertEqual(Room(room_id=new_id, building_id=2, floor=3, room_name='Meeting room'),
+                         self.repo_room[new_id])
+
+    def test_save_room_2_update(self):
+        self.repo_room[1] = Room(room_id=1, building_id=1, floor=1, room_name='Meeting room')
+        self.assertEqual(Room(room_id=1, building_id=1, floor=1, room_name='Meeting room'), self.repo_room[1])
+
+    def test_get_all_room_1(self):
+        self.assertEqual(Room(room_id=1, building_id=1, floor=1, room_name='Meeting room'), *self.repo_room.get_all())
+
+    def test_number_of_row_room(self):
+        self.assertEqual(1, len(self.repo_room))
 
 
 if __name__ == '__main__':

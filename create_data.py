@@ -1,5 +1,4 @@
-from model import Country, City, Building
-from repo import CountryRepository, CityRepository, BuildingRepository
+from repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository, Country, City, Building, Room
 
 
 def insert_data():
@@ -22,3 +21,6 @@ def insert_data():
     repo_building[3] = Building(building_id=3, city_id=3, address='Default address')
     repo_building[4] = Building(building_id=4, city_id=4, address='Default address')
     repo_building[5] = Building(building_id=5, city_id=5, address='Default address')
+
+    repo_room = RoomRepository(table='rooms', id_field='room_id')
+    repo_room[1] = Room(room_id=1, building_id=1, floor=1, room_name='Meeting room')

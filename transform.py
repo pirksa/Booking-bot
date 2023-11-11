@@ -1,4 +1,4 @@
-from model import Country, City, Building
+from model import Country, City, Building, Room
 
 
 def tuple_to_country(data: tuple):
@@ -24,3 +24,11 @@ def tuple_to_building(data: tuple):
 
 def building_to_tuple(building: Building):
     return building.building_id, building.city_id, building.address
+
+
+def tuple_to_room(data: tuple):
+    return Room(room_id=data[0], building_id=data[1], floor=data[2], room_name=data[3]) if data else None
+
+
+def room_to_tuple(room: Room):
+    return room.room_id, room.building_id, room.floor, room.room_name
