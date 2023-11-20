@@ -2,15 +2,12 @@ import asyncio
 import logging
 import sys
 
-from aiogram import Bot, types, Dispatcher
-from aiogram.filters import CommandStart
+from aiogram import Bot, Dispatcher
+
+import handlers
 
 dp = Dispatcher()
-
-
-@dp.message(CommandStart)
-async def start_command(message: types.Message):
-    await message.answer('Greetings!')
+dp.include_routers(handlers.router)
 
 
 async def main():
