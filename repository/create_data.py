@@ -1,4 +1,4 @@
-from repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository, Country, City, Building, Room
+from .repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository, Country, City, Building, Room
 
 
 def insert_data():

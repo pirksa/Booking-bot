@@ -2,7 +2,7 @@ import sqlite3
 
 
 def create_schema():
-    con = sqlite3.connect('rooms.sqlite')
+    con = sqlite3.connect('../rooms.sqlite')
     cur = con.cursor()
     cur.executescript('''
     DROP TABLE IF EXISTS countries;

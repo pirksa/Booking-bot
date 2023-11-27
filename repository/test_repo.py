@@ -2,10 +2,10 @@ import unittest
 
 from tsidpy import TSID
 
-from create_data import insert_data
-from init_db import create_schema
-from model import Country, City, Building, Room
-from repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository
+from .create_data import insert_data
+from .init_db import create_schema
+from .model import Country, City, Building, Room
+from .repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository
 
 
 class Test(unittest.TestCase):

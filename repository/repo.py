@@ -1,7 +1,7 @@
 import sqlite3
 
-import transform
-from model import Country, City, Building, Room
+from . import transform
+from .model import Country, City, Building, Room
 
 __select_sql = 'SELECT * FROM'
 __delete_sql = 'DELETE FROM'
@@ -20,7 +20,7 @@ class Repository:
         if props.get('connection'):
             self.__con = props.get('connection')
         else:
-            self.__con = sqlite3.connect('rooms.sqlite')
+            self.__con = sqlite3.connect('../rooms.sqlite')
         self.table = props.get('table')
         self.id_field = props.get('id_field')
 

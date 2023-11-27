@@ -1,4 +1,4 @@
-from model import Country, City, Building, Room
+from .model import Country, City, Building, Room
 
 
 def tuple_to_country(data: tuple):
