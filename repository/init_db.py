@@ -2,7 +2,7 @@ import sqlite3
 
 
 def create_schema():
-    con = sqlite3.connect('../rooms.sqlite')
+    con = sqlite3.connect('rooms.sqlite')
     cur = con.cursor()
     cur.executescript('''
     DROP TABLE IF EXISTS countries;
@@ -12,7 +12,8 @@ def create_schema():
     CREATE TABLE IF NOT EXISTS countries (
         country_id INTEGER PRIMARY KEY,
         country_code VARCHAR(10),
-        country_name VARCHAR(50)
+        country_name VARCHAR(50),
+        last_updated TEXT
     );
     CREATE TABLE IF NOT EXISTS cities (
         city_id INTEGER PRIMARY KEY,
@@ -20,6 +21,7 @@ def create_schema():
         city_name VARCHAR(50),
         timezone VARCHAR(10),
         country_id INTEGER,
+        last_updated TEXT,
     FOREIGN KEY(country_id) REFERENCES countries(country_id)
     );
     CREATE TABLE IF NOT EXISTS buildings (

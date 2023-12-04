@@ -20,7 +20,7 @@ class Repository:
         if props.get('connection'):
             self.__con = props.get('connection')
         else:
-            self.__con = sqlite3.connect('../rooms.sqlite')
+            self.__con = sqlite3.connect('rooms.sqlite')
         self.table = props.get('table')
         self.id_field = props.get('id_field')
 
@@ -70,7 +70,7 @@ class CountryRepository(Repository):
     def save(self, entity: Country):
         cur = self.con.cursor()
         data = transform.country_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} countries VALUES (?, ?, ?)'
+        query = f'{globals()["__insert_sql"]} countries VALUES (?, ?, ?, ?)'
         cur.execute(query, data)
         self.con.commit()
 
@@ -96,7 +96,7 @@ class CityRepository(Repository):
     def save(self, entity: City):
         cur = self.con.cursor()
         data = transform.city_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} cities VALUES (?, ?, ?, ?, ?)'
+        query = f'{globals()["__insert_sql"]} cities VALUES (?, ?, ?, ?, ?, ?)'
         cur.execute(query, data)
         self.con.commit()
 

@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import sys
 
 from aiogram import Bot, Dispatcher
 
@@ -20,5 +19,6 @@ async def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    logging.basicConfig(format='%(asctime)s | %(name)-18s | %(funcName)-15s | %(levelname)s | %(message)s',
+                        level=logging.INFO, filename='test.log', filemode='w')
     asyncio.run(main())
