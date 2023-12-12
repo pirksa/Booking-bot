@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  postgres_db:
+    hostname: postgres
+    image: postgres:15.5-alpine3.18
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=rooms
+    ports:
+      - '5432:5432'
+

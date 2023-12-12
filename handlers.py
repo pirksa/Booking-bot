@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -5,9 +7,8 @@ from aiogram.types import Message
 
 import db_entry
 import keyboards
-from parser import country_pars
+from parser import country_pars, city_pars
 from states import EnterMenu
-import logging
 
 handlers_logger = logging.getLogger(__name__)
 router = Router(name=__name__)
@@ -22,7 +23,7 @@ async def start_command(message: Message):
 @router.message(Command('clear'))
 async def clear_command(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer('Действие отменено')
+    await message.answer('Действие отменено', reply_markup=keyboards.menu)
     handlers_logger.info("Init Command 'clear'")
 
 
@@ -35,9 +36,9 @@ async def chose_country(message: Message, state: FSMContext):
 
 
 @router.message(StateFilter(None), F.text == 'Введите город')
-async def chose_country(message: Message, state: FSMContext):
-    await message.answer(text='Введите код города, название города, часовой пояс через пробел\n'
-                              'Пример: ALA Almaty UTC+6')
+async def chose_cty(message: Message, state: FSMContext):
+    await message.answer(text='Введите код города, название города, часовой пояс, код страны через пробел\n'
+                              'Пример: ALA Almaty UTC+6 KZ')
     await state.set_state(EnterMenu.select_city)
     handlers_logger.info("Init button 'Enter city'")
 
@@ -54,12 +55,18 @@ async def fill_country(message: Message, state: FSMContext):
     db_entry.country_save(message.text)
     await message.answer(text=f'Данные сохранены:\n'
                               f'Код страны: {country_pars(message.text)[0]}\n'
-                              f'Название старны: {country_pars(message.text)[1]}')
+                              f'Старна: {country_pars(message.text)[1]}')
+    await message.answer(text='Теперь, введите город', reply_markup=keyboards.menu)
     await state.clear()
 
 
 @router.message(EnterMenu.select_city, F.text)
 async def fill_city(message: Message, state: FSMContext):
     await state.update_data(city=message.text)
-    await message.answer(text=f'Данные сохранены: {message.text}')
+    db_entry.city_save(message.text)
+    await message.answer(text=f'Данные сохранены:\n'
+                              f'Код города: {city_pars(message.text)[0]}\n'
+                              f'Город: {city_pars(message.text)[1]}\n'
+                              f'Часовой пояс: {city_pars(message.text)[2]}\n'
+                              f'Код страны: {city_pars(message.text)[3]}')
     await state.clear()
