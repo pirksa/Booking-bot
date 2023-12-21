@@ -6,14 +6,16 @@ from aiogram import Bot, Dispatcher
 
 import handlers
 from repository.init_db import create_schema
+from settings import load_config
 
 dp = Dispatcher()
 dp.include_routers(handlers.router)
+config = load_config()
 
 
 async def main():
     create_schema()
-    bot = Bot(token='6616305229:AAHj3KN7esge2F2PIDStruPUqXTO1mTQ5Jg')
+    bot = Bot(token=config['tg']['token'])
     await dp.start_polling(bot)
 
 

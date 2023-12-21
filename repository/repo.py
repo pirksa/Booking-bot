@@ -1,9 +1,12 @@
 import psycopg2
 
+from settings import load_config
 from . import transform
 from .model import Country, City, Building, Room
 
-__select_sql = 'SELECT * FROM'
+config = load_config()
+__select_sql = 'SELECT'
+__select_all_sql = 'SELECT * FROM'
 __delete_sql = 'DELETE FROM'
 __insert_sql = 'INSERT INTO'
 __select_count_sql = 'SELECT COUNT(*) FROM'
@@ -20,7 +23,8 @@ class Repository:
         if props.get('connection'):
             self.__con = props.get('connection')
         else:
-            self.__con = psycopg2.connect(database='rooms', user='admin', password='root', host='localhost')
+            self.__con = psycopg2.connect(database=config['db']['database'], user=config['db']['user'],
+                                          password=config['db']['password'], host=config['db']['host'])
         self.table = props.get('table')
         self.id_field = props.get('id_field')
 
@@ -47,6 +51,12 @@ class Repository:
         cur.execute(query, id_value)
         self.con.commit()
 
+    def get_id_by_value(self, value_field: str, value: str):
+        cur = self.con.cursor()
+        query = f"{globals()['__select_sql']} {self.id_field} FROM {self.table} WHERE {value_field} = '%s'" % value
+        cur.execute(query)
+        return cur.fetchone()
+
     def get_by_id(self, *id_value: int):
         pass
 
@@ -63,7 +73,7 @@ class CountryRepository(Repository):
 
     def get_by_id(self, *id_value: int):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} countries WHERE country_id = %s'
+        query = f'{globals()["__select_all_sql"]} countries WHERE country_id = %s'
         cur.execute(query, id_value)
         res = cur.fetchone()
         return transform.tuple_to_country(res)
@@ -79,7 +89,7 @@ class CountryRepository(Repository):
 
     def get_all(self):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} countries'
+        query = f'{globals()["__select_all_sql"]} countries'
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_country(i) for i in res]
@@ -91,7 +101,7 @@ class CityRepository(Repository):
 
     def get_by_id(self, *id_value: int):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} cities WHERE city_id = %s'
+        query = f'{globals()["__select_all_sql"]} cities WHERE city_id = %s'
         cur.execute(query, id_value)
         res = cur.fetchone()
         return transform.tuple_to_city(res)
@@ -107,7 +117,7 @@ class CityRepository(Repository):
 
     def get_all(self):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} cities'
+        query = f'{globals()["__select_all_sql"]} cities'
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_city(i) for i in res]
@@ -119,7 +129,7 @@ class BuildingRepository(Repository):
 
     def get_by_id(self, *id_value: int):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} buildings WHERE building_id = %s'
+        query = f'{globals()["__select_all_sql"]} buildings WHERE building_id = %s'
         cur.execute(query, id_value)
         res = cur.fetchone()
         return transform.tuple_to_building(res)
@@ -134,7 +144,7 @@ class BuildingRepository(Repository):
 
     def get_all(self):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} buildings'
+        query = f'{globals()["__select_all_sql"]} buildings'
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_building(i) for i in res]
@@ -146,7 +156,7 @@ class RoomRepository(Repository):
 
     def get_by_id(self, *id_value: int):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} rooms WHERE room_id = %s'
+        query = f'{globals()["__select_all_sql"]} rooms WHERE room_id = %s'
         cur.execute(query, id_value)
         res = cur.fetchone()
         return transform.tuple_to_room(res)
@@ -162,7 +172,7 @@ class RoomRepository(Repository):
 
     def get_all(self):
         cur = self.con.cursor()
-        query = f'{globals()["__select_sql"]} rooms'
+        query = f'{globals()["__select_all_sql"]} rooms'
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_room(i) for i in res]
