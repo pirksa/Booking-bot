@@ -2,22 +2,25 @@ import asyncio
 import logging
 import sys
 
-from aiogram import Bot, types, Dispatcher
-from aiogram.filters import CommandStart
+from aiogram import Bot, Dispatcher
+
+import handlers
+from repository.init_db import create_schema
+from settings import load_config
 
 dp = Dispatcher()
-
-
-@dp.message(CommandStart)
-async def start_command(message: types.Message):
-    await message.answer('Greetings!')
+dp.include_routers(handlers.router)
+config = load_config()
 
 
 async def main():
-    bot = Bot(token='6616305229:AAHj3KN7esge2F2PIDStruPUqXTO1mTQ5Jg')
+    create_schema()
+    bot = Bot(token=config['tg']['token'])
     await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    logging.basicConfig(format='%(asctime)s | %(name)-18s | %(funcName)-15s | %(levelname)s | %(message)s',
+                        level=logging.INFO,
+                        handlers=[logging.FileHandler('test.log', mode='w'), logging.StreamHandler(sys.stdout)])
     asyncio.run(main())

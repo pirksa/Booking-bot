@@ -1,0 +1,7 @@
+db:
+  database: 'rooms'
+  user: 'admin'
+  password: 'root'
+  host: 'localhost'
+tg:
+  token: '6616305229:AAHj3KN7esge2F2PIDStruPUqXTO1mTQ5Jg'

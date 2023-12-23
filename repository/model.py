@@ -1,4 +1,4 @@
-import transform
+from . import transform
 
 
 class Country:
@@ -6,9 +6,10 @@ class Country:
         self.country_id = props.get('country_id')
         self.country_code = props.get('country_code')
         self.country_name = props.get('country_name')
+        self.last_updated = props.get('last_updated')
 
     def __str__(self):
-        return f"Country({self.country_id}, {self.country_code}, {self.country_name})"
+        return f"Country({self.country_id}, {self.country_code}, {self.country_name}, {self.last_updated})"
 
     def __eq__(self, other):
         return transform.country_to_tuple(self) == transform.country_to_tuple(other)
@@ -21,9 +22,11 @@ class City:
         self.city_name = props.get('city_name')
         self.timezone = props.get('timezone')
         self.country_id = props.get('country_id')
+        self.last_updated = props.get('last_updated')
 
     def __str__(self):
-        return f'City({self.city_id}, {self.city_code}, {self.city_name}, {self.timezone}, {self.country_id})'
+        return f'City({self.city_id}, {self.city_code}, {self.city_name}, {self.timezone}, {self.country_id}, ' \
+               f'{self.last_updated})'
 
     def __eq__(self, other):
         return transform.city_to_tuple(self) == transform.city_to_tuple(other)

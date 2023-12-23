@@ -2,10 +2,10 @@ import unittest
 
 from tsidpy import TSID
 
-from create_data import insert_data
-from init_db import create_schema
-from model import Country, City, Building, Room
-from repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository
+from .create_data import insert_data
+from .init_db import create_schema
+from .model import Country, City, Building, Room
+from .repo import CountryRepository, CityRepository, BuildingRepository, RoomRepository
 
 
 class Test(unittest.TestCase):
@@ -18,7 +18,8 @@ class Test(unittest.TestCase):
         self.repo_room = RoomRepository(table='rooms', id_field='room_id')
 
     def test_get_by_id_country_1(self):
-        self.assertEqual(Country(country_id=1, country_code='KZ', country_name='Kazakhstan'), self.repo_country[1])
+        self.assertEqual(Country(country_id=1, country_code='KZ', country_name='Kazakhstan',
+                                 last_updated='1'), self.repo_country[1])
 
     def test_get_by_id_country_2(self):
         new_id = TSID.create().number
@@ -35,21 +36,22 @@ class Test(unittest.TestCase):
                          self.repo_country[new_id])
 
     def test_save_country_2_update(self):
-        self.repo_country[1] = Country(country_id=1, country_code='KZ', country_name='Kazakhstan')
-        self.assertEqual(Country(country_id=1, country_code='KZ', country_name='Kazakhstan'), self.repo_country[1])
+        self.repo_country[1] = Country(country_id=1, country_code='KZ', country_name='Kazakhstan', last_updated='1')
+        self.assertEqual(Country(country_id=1, country_code='KZ', country_name='Kazakhstan', last_updated='1'),
+                         self.repo_country[1])
 
     def test_get_all_country_1(self):
-        res = [Country(country_id=1, country_code='KZ', country_name='Kazakhstan'),
-               Country(country_id=2, country_code='UZ', country_name='Uzbekistan'),
-               Country(country_id=3, country_code='RU', country_name='Russia'),
-               Country(country_id=4, country_code='TR', country_name='Turkey')]
+        res = [Country(country_id=1, country_code='KZ', country_name='Kazakhstan', last_updated='1'),
+               Country(country_id=2, country_code='UZ', country_name='Uzbekistan', last_updated='2'),
+               Country(country_id=3, country_code='RU', country_name='Russia', last_updated='3'),
+               Country(country_id=4, country_code='TR', country_name='Turkey', last_updated='4')]
         self.assertEqual(res, self.repo_country.get_all())
 
     def test_number_of_row_country_1(self):
         self.assertEqual(4, len(self.repo_country))
 
     def test_get_by_id_city_1(self):
-        res = City(city_id=1, city_code='ALA', city_name='Almaty', timezone='UTC+6', country_id=1)
+        res = City(city_id=1, city_code='ALA', city_name='Almaty', timezone='UTC+6', country_id=1, last_updated='1')
         self.assertEqual(res, self.repo_city[1])
 
     def test_get_by_id_city_2(self):
@@ -73,11 +75,11 @@ class Test(unittest.TestCase):
         self.assertEqual(res, self.repo_city[3])
 
     def test_get_all_city_1(self):
-        res = [City(city_id=1, city_code='ALA', city_name='Almaty', timezone='UTC+6', country_id=1),
-               City(city_id=2, city_code='TSE', city_name='Astana', timezone='UTC+6', country_id=1),
-               City(city_id=3, city_code='TAS', city_name='Tashkent', timezone='UTC+5', country_id=2),
-               City(city_id=4, city_code='MOW', city_name='Moscow', timezone='UTC+3', country_id=3),
-               City(city_id=5, city_code='IST', city_name='Istanbul', timezone='UTC+3', country_id=4)]
+        res = [City(city_id=1, city_code='ALA', city_name='Almaty', timezone='UTC+6', country_id=1, last_updated='1'),
+               City(city_id=2, city_code='TSE', city_name='Astana', timezone='UTC+6', country_id=1, last_updated='2'),
+               City(city_id=3, city_code='TAS', city_name='Tashkent', timezone='UTC+5', country_id=2, last_updated='3'),
+               City(city_id=4, city_code='MOW', city_name='Moscow', timezone='UTC+3', country_id=3, last_updated='4'),
+               City(city_id=5, city_code='IST', city_name='Istanbul', timezone='UTC+3', country_id=4, last_updated='5')]
         self.assertEqual(res, self.repo_city.get_all())
 
     def test_number_of_rows_city(self):
