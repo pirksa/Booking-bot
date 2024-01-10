@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS countries (
     country_id BIGINT PRIMARY KEY,
     country_code VARCHAR(10),
     country_name VARCHAR(50),
-    last_updated TIMESTAMP
+    last_updated TIMESTAMP,
+    last_updated_by BIGINT
     );
 
 CREATE TABLE IF NOT EXISTS cities (
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS cities (
     timezone VARCHAR(10),
     country_id BIGINT,
     last_updated TIMESTAMP,
+    last_updated_by BIGINT,
     FOREIGN KEY(country_id) REFERENCES countries(country_id) ON UPDATE CASCADE
     );
 
@@ -33,16 +35,18 @@ CREATE TABLE IF NOT EXISTS buildings (
     building_id BIGINT PRIMARY KEY,
     city_id BIGINT,
     address VARCHAR(50),
+    floor VARCHAR(10),
     last_updated TIMESTAMP,
+    last_updated_by BIGINT,
     FOREIGN KEY(city_id) REFERENCES cities(city_id) ON DELETE CASCADE
     );
 
 CREATE TABLE IF NOT EXISTS rooms (
     room_id BIGINT PRIMARY KEY,
     building_id BIGINT,
-    floor INTEGER,
     room_name VARCHAR(50),
     last_updated TIMESTAMP,
+    last_updated_by BIGINT,
     FOREIGN KEY(building_id) REFERENCES buildings(building_id) ON DELETE CASCADE
     );
 
@@ -51,6 +55,7 @@ CREATE TABLE IF NOT EXISTS companies (
     company_name VARCHAR(100),
     building_id BIGINT,
     last_updated TIMESTAMP,
+    last_updated_by BIGINT,
     FOREIGN KEY(building_id) REFERENCES buildings(building_id) ON DELETE CASCADE
     );
 
@@ -67,5 +72,6 @@ CREATE TABLE IF NOT EXISTS bookings (
     date_time TIMESTAMP,
     booking_time INTEGER,
     last_updated TIMESTAMP,
+    last_updated_by BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );

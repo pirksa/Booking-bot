@@ -2,7 +2,7 @@ import psycopg2
 
 from settings import load_config
 from . import transform
-from .model import Country, City, Building, Room
+from .model import Country, City, Building, Room, User
 
 config = load_config()
 __select_sql = 'SELECT'
@@ -81,9 +81,9 @@ class CountryRepository(Repository):
     def save(self, entity: Country):
         cur = self.con.cursor()
         data = transform.country_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} countries VALUES (%s, %s, %s, %s) ON CONFLICT (country_id) DO UPDATE ' \
-                f'SET (country_code, country_name, last_updated) = (EXCLUDED.country_code, EXCLUDED.country_name,' \
-                f' EXCLUDED.last_updated)'
+        query = f'{globals()["__insert_sql"]} countries VALUES (%s, %s, %s, %s, %s) ON CONFLICT (country_id) DO UPDATE'\
+                f' SET (country_code, country_name, last_updated, last_updated_by) = (EXCLUDED.country_code,'\
+                f' EXCLUDED.country_name, EXCLUDED.last_updated, EXCLUDED.last_updated_by)'
         cur.execute(query, data)
         self.con.commit()
 
@@ -109,9 +109,10 @@ class CityRepository(Repository):
     def save(self, entity: City):
         cur = self.con.cursor()
         data = transform.city_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} cities VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (city_id) DO UPDATE ' \
-                f'SET (city_code, city_name, timezone, country_id, last_updated) = (EXCLUDED.city_code, ' \
-                f' EXCLUDED.city_name, EXCLUDED.timezone, EXCLUDED.country_id, EXCLUDED.last_updated)'
+        query = f'{globals()["__insert_sql"]} cities VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (city_id) ' \
+                f'DO UPDATE SET (city_code, city_name, timezone, country_id, last_updated,' \
+                f'last_updated_by) = (EXCLUDED.city_code, EXCLUDED.city_name, EXCLUDED.timezone,' \
+                f'EXCLUDED.country_id, EXCLUDED.last_updated, EXCLUDED.last_updated_by)'
         cur.execute(query, data)
         self.con.commit()
 
@@ -137,8 +138,9 @@ class BuildingRepository(Repository):
     def save(self, entity: Building):
         cur = self.con.cursor()
         data = transform.building_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} buildings VALUES (%s, %s, %s, %s) ON CONFLICT (building_id) DO UPDATE ' \
-                f'SET (city_id, address, last_updated) =  (EXCLUDED.city_id, EXCLUDED.address, EXCLUDED.last_updated)'
+        query = f'{globals()["__insert_sql"]} buildings VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (building_id) ' \
+                f'DO UPDATE SET (city_id, address, floor, last_updated, last_updated_by) =  (EXCLUDED.city_id,' \
+                f'EXCLUDED.address, EXCLUDED.floor, EXCLUDED.last_updated, EXCLUDED.last_updated_by)'
         cur.execute(query, data)
         self.con.commit()
 
@@ -176,3 +178,31 @@ class RoomRepository(Repository):
         cur.execute(query)
         res = cur.fetchall()
         return [transform.tuple_to_room(i) for i in res]
+
+
+class UserRepository(Repository):
+    def __init__(self, **props):
+        super().__init__(**props)
+
+    def get_by_id(self, *id_value: int):
+        cur = self.con.cursor()
+        query = f'{globals()["__select_all_sql"]} users WHERE user_id = %s'
+        cur.execute(query, id_value)
+        res = cur.fetchone()
+        return transform.tuple_to_user(res)
+
+    def save(self, entity: User):
+        cur = self.con.cursor()
+        data = transform.user_to_tuple(entity)
+        query = f'{globals()["__insert_sql"]} users VALUES (%s, %s, %s, %s) ON CONFLICT (user_id) DO UPDATE'\
+                f' SET (user_name, phone_number, join_date) = (EXCLUDED.user_name, EXCLUDED.phone_number,' \
+                f' EXCLUDED.join_date)'
+        cur.execute(query, data)
+        self.con.commit()
+
+    def get_all(self):
+        cur = self.con.cursor()
+        query = f'{globals()["__select_all_sql"]} users'
+        cur.execute(query)
+        res = cur.fetchall()
+        return [transform.tuple_to_user(i) for i in res]
