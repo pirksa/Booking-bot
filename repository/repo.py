@@ -81,8 +81,8 @@ class CountryRepository(Repository):
     def save(self, entity: Country):
         cur = self.con.cursor()
         data = transform.country_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} countries VALUES (%s, %s, %s, %s, %s) ON CONFLICT (country_id) DO UPDATE'\
-                f' SET (country_code, country_name, last_updated, last_updated_by) = (EXCLUDED.country_code,'\
+        query = f'{globals()["__insert_sql"]} countries VALUES (%s, %s, %s, %s, %s) ON CONFLICT (country_id) DO UPDATE' \
+                f' SET (country_code, country_name, last_updated, last_updated_by) = (EXCLUDED.country_code,' \
                 f' EXCLUDED.country_name, EXCLUDED.last_updated, EXCLUDED.last_updated_by)'
         cur.execute(query, data)
         self.con.commit()
@@ -167,8 +167,8 @@ class RoomRepository(Repository):
         cur = self.con.cursor()
         data = transform.room_to_tuple(entity)
         query = f'{globals()["__insert_sql"]} rooms VALUES (%s, %s, %s, %s, %s) ON CONFLICT (room_id) DO UPDATE ' \
-                f' SET (building_id, floor, room_name, last_updated) = (EXCLUDED.building_id, EXCLUDED.floor, ' \
-                f' EXCLUDED.last_updated)'
+                f' SET (building_id, room_name, last_updated, last_updated_by) = (EXCLUDED.building_id,' \
+                f' EXCLUDED.room_name, EXCLUDED.last_updated, EXCLUDED.last_updated_by)'
         cur.execute(query, data)
         self.con.commit()
 
@@ -194,7 +194,7 @@ class UserRepository(Repository):
     def save(self, entity: User):
         cur = self.con.cursor()
         data = transform.user_to_tuple(entity)
-        query = f'{globals()["__insert_sql"]} users VALUES (%s, %s, %s, %s) ON CONFLICT (user_id) DO UPDATE'\
+        query = f'{globals()["__insert_sql"]} users VALUES (%s, %s, %s, %s) ON CONFLICT (user_id) DO UPDATE' \
                 f' SET (user_name, phone_number, join_date) = (EXCLUDED.user_name, EXCLUDED.phone_number,' \
                 f' EXCLUDED.join_date)'
         cur.execute(query, data)

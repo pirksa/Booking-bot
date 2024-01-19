@@ -56,11 +56,13 @@ class Room:
     def __init__(self, **props):
         self.room_id = props.get('room_id')
         self.building_id = props.get('building_id')
-        self.floor = props.get('floor')
         self.room_name = props.get('room_name')
+        self.last_updated = props.get('last_updated')
+        self.last_updated_by = props.get('last_updated_by')
 
     def __str__(self):
-        return f'Room({self.room_id}, {self.building_id}, {self.floor}, {self.room_name})'
+        return f'Room({self.room_id}, {self.building_id}, {self.room_name}), {self.last_updated},' \
+               f' {self.last_updated_by}'
 
     def __eq__(self, other):
         return transform.room_to_tuple(self) == transform.room_to_tuple(other)

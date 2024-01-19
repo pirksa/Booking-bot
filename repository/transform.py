@@ -31,15 +31,16 @@ def building_to_tuple(building: Building):
 
 
 def tuple_to_room(data: tuple):
-    return Room(room_id=data[0], building_id=data[1], room_name=data[2]) if data else None
+    return Room(room_id=data[0], building_id=data[1], room_name=data[2], last_updated=data[3],
+                last_updated_by=data[4]) if data else None
 
 
 def room_to_tuple(room: Room):
-    return room.room_id, room.building_id, room.room_name
+    return room.room_id, room.building_id, room.room_name, room.last_updated, room.last_updated_by
 
 
 def tuple_to_user(data: tuple):
-    return User(user_id=data[0], user_name=data[1], phone_number=data[2], join_date=data[3])
+    return User(user_id=data[0], user_name=data[1], phone_number=data[2], join_date=data[3]) if data else None
 
 
 def user_to_tuple(user: User):
