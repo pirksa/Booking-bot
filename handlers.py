@@ -8,7 +8,7 @@ from aiogram.types import Message
 import db_entry
 import keyboards
 from parser import country_pars, city_pars
-from states import EnterMenu, UserInfo, EnterBuilding
+from states import EnterMenu, UserInfo, EnterCompany, EnterBooking
 
 handlers_logger = logging.getLogger(__name__)
 router = Router(name=__name__)
@@ -82,26 +82,45 @@ async def fill_city(message: Message, state: FSMContext):
 async def chose_building_street(message: Message, state: FSMContext):
     await message.answer(text='Введите название улицы и номер здания через пробел\n'
                               'Пример: Baizakov 280')
-    await state.set_state(EnterBuilding.enter_street)
+    await state.set_state(EnterMenu.select_building)
 
 
-@router.message(EnterBuilding.enter_street, F.text)
-async def chose_building_floor(message: Message, state: FSMContext):
-    await state.update_data(street=message.text)
-    await message.answer(text='Укажите этаж')
-    await state.set_state(EnterBuilding.enter_floor)
-
-
-@router.message(StateFilter(EnterBuilding.enter_floor), F.text)
+@router.message(StateFilter(EnterMenu.select_building), F.text)
 async def fill_building(message: Message, state: FSMContext):
     user_data = await state.get_data()
-    data = user_data['street'], message.text
-    db_entry.building_save(city_code=user_data['city_code'], data=data, user_id=message.from_user.id)
+    db_entry.building_save(city_code=user_data['city_code'], data=message.text, user_id=message.from_user.id)
     await message.answer(text=f'Данные сохранены\n'
-                              f'Адресс здания: {data[0]}\n'
+                              f'Адресс здания: {message.text}')
+    await message.answer(text='Теперь введите компанию', reply_markup=keyboards.menu)
+    await state.update_data(address=message.text)
+    await state.set_state(None)
+
+
+@router.message(StateFilter(None), F.text == 'Введите компанию')
+async def chose_company_name(message: Message, state: FSMContext):
+    await message.answer(text='Введите название компании\n'
+                              'Пример: Smart.Point')
+    await state.set_state(EnterCompany.enter_company_name)
+    handlers_logger.info("Init button 'Enter company'")
+
+
+@router.message(EnterCompany.enter_company_name, F.text)
+async def chose_company_floor(message: Message, state: FSMContext):
+    await state.update_data(company_name=message.text)
+    await message.answer(text='Укажите этаж')
+    await state.set_state(EnterCompany.enter_floor)
+
+
+@router.message(StateFilter(EnterCompany.enter_floor), F.text)
+async def fill_company(message: Message, state: FSMContext):
+    user_data = await state.get_data()
+    data = user_data['company_name'], message.text
+    db_entry.company_save(data=data, building_address=user_data['address'], user_id=message.from_user.id)
+    await message.answer(text=f'Данные сохранены\n'
+                              f'Название компании: {data[0]}\n'
                               f'Этаж: {data[1]}')
     await message.answer(text='Теперь введите помещение', reply_markup=keyboards.menu)
-    await state.update_data(floor=message.text)
+    await state.update_data(floor=data[1])
     await state.set_state(None)
 
 
@@ -110,7 +129,7 @@ async def chose_room(message: Message, state: FSMContext):
     await message.answer(text='Введите название помещения\n'
                               'Пример: Meeting room')
     await state.set_state(EnterMenu.select_room)
-    handlers_logger.info("init button 'Enter room'")
+    handlers_logger.info("Init button 'Enter room'")
 
 
 @router.message(StateFilter(EnterMenu.select_room), F.text)
@@ -119,6 +138,44 @@ async def fill_room(message: Message, state: FSMContext):
     db_entry.room_save(message=message.text, user_id=message.from_user.id, floor=user_data['floor'])
     await message.answer(text=f'Данные сохранены\n'
                               f'Название помещения: {message.text}')
+    await message.answer(text='Теперь введите бронирование', reply_markup=keyboards.menu)
+    await state.update_data(room_name=message.text)
+    await state.set_state(None)
+
+
+@router.message(StateFilter(None), F.text == 'Введите бронирование')
+async def chose_booking_date(message: Message, state: FSMContext):
+    await message.answer(text='Укажите дату бронирования\n'
+                              'Пример: 2024-01-01')
+    await state.set_state(EnterBooking.enter_date)
+    handlers_logger.info("Init button 'Enter booking'")
+
+
+@router.message(StateFilter(EnterBooking.enter_date), F.text)
+async def chose_start_time(message: Message, state: FSMContext):
+    await state.update_data(booking_date=message.text)
+    await message.answer(text='Укажите время начала\n'
+                              'Пример: 11:00')
+    await state.set_state(EnterBooking.enter_start_time)
+
+
+@router.message(StateFilter(EnterBooking.enter_start_time), F.text)
+async def chose_end_time(message: Message, state: FSMContext):
+    await state.update_data(start_time=message.text)
+    await message.answer(text='Укажите время окончания\n'
+                              'Пример: 13:00')
+    await state.set_state(EnterBooking.enter_end_time)
+
+
+@router.message(StateFilter(EnterBooking.enter_end_time), F.text)
+async def fill_booking(message: Message, state: FSMContext):
+    user_data = await state.get_data()
+    data = user_data['booking_date'], user_data['start_time'], message.text
+    db_entry.booking_save(data=data, room_name=user_data['room_name'], user_id=message.from_user.id)
+    await message.answer(text='Данные сохранены\n'
+                              f'Дата бронирования: {data[0]}\n'
+                              f'Время начала: {data[1]}\n'
+                              f'Время окончания: {data[2]}')
     await state.set_state(None)
 
 

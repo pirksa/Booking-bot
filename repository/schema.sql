@@ -35,28 +35,28 @@ CREATE TABLE IF NOT EXISTS buildings (
     building_id BIGINT PRIMARY KEY,
     city_id BIGINT,
     address VARCHAR(50),
-    floor VARCHAR(10),
     last_updated TIMESTAMP,
     last_updated_by BIGINT,
     FOREIGN KEY(city_id) REFERENCES cities(city_id) ON DELETE CASCADE
     );
 
-CREATE TABLE IF NOT EXISTS rooms (
-    room_id BIGINT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS companies (
+    company_id BIGINT PRIMARY KEY,
+    company_name VARCHAR(100),
+    floor VARCHAR(10),
     building_id BIGINT,
-    room_name VARCHAR(50),
     last_updated TIMESTAMP,
     last_updated_by BIGINT,
     FOREIGN KEY(building_id) REFERENCES buildings(building_id) ON DELETE CASCADE
     );
 
-CREATE TABLE IF NOT EXISTS companies (
-    company_id BIGINT PRIMARY KEY,
-    company_name VARCHAR(100),
-    building_id BIGINT,
+CREATE TABLE IF NOT EXISTS rooms (
+    room_id BIGINT PRIMARY KEY,
+    company_id BIGINT,
+    room_name VARCHAR(50),
     last_updated TIMESTAMP,
     last_updated_by BIGINT,
-    FOREIGN KEY(building_id) REFERENCES buildings(building_id) ON DELETE CASCADE
+    FOREIGN KEY(company_id) REFERENCES companies(company_id) ON DELETE CASCADE
     );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -69,9 +69,12 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS bookings (
     booking_id BIGINT PRIMARY KEY,
     user_id INTEGER,
-    date_time TIMESTAMP,
-    booking_time INTEGER,
+    room_id BIGINT,
+    booking_date DATE,
+    start_time TIME,
+    end_time TIME,
     last_updated TIMESTAMP,
     last_updated_by BIGINT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE
+    );
