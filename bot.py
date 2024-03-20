@@ -9,11 +9,11 @@ import handlers
 from repository.init_db import create_schema
 from settings import load_config
 
-redis = Redis(host='localhost')
+config = load_config()
+redis = Redis(host=config['redis']['host'])
 storage = RedisStorage(redis=redis)
 dp = Dispatcher(storage=storage)
 dp.include_routers(handlers.router)
-config = load_config()
 
 
 async def main():
