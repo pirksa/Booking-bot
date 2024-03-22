@@ -3,14 +3,17 @@ import logging
 import sys
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.redis import Redis, RedisStorage
 
 import handlers
 from repository.init_db import create_schema
 from settings import load_config
 
-dp = Dispatcher()
-dp.include_routers(handlers.router)
 config = load_config()
+redis = Redis(host=config['redis']['host'])
+storage = RedisStorage(redis=redis)
+dp = Dispatcher(storage=storage)
+dp.include_routers(handlers.router)
 
 
 async def main():
