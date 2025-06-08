@@ -1,9 +1,13 @@
 import asyncio
 import logging
 import sys
+import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import Redis, RedisStorage
+
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 
 import handlers
 from repository.init_db import create_schema
@@ -18,7 +22,7 @@ dp.include_routers(handlers.router)
 
 async def main():
     create_schema()
-    bot = Bot(token=config['tg']['token'])
+    bot = Bot(token=os.getenv('TOKEN'))
     await dp.start_polling(bot)
 
 

@@ -5,5 +5,3 @@ db:
   host: 'postgres_db'
 redis:
   host: 'redis'
-tg:
-  token: '6616305229:AAHj3KN7esge2F2PIDStruPUqXTO1mTQ5Jg'
